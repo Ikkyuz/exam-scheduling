@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
+    networks:
+      - caddy
+
+  app-migrate-deploy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    command: bun x prisma migrate deploy
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
+    networks:
+      - caddy
+
+networks:
+  caddy:
+    external: true 

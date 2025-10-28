@@ -1,0 +1,159 @@
+generator mysqlClient {
+    provider = "prisma-client"
+    output   = "../src/providers/database/generated/mysql"
+}
+
+datasource mysql {
+    provider = "mysql"
+    url      = env("DATABASE_URL_MYSQL")
+}
+
+enum ExamType {
+    InSchedule // ในตาราง
+    OutSchedule // นอกตาราง
+}
+
+enum Level {
+    Pvoc // ปวช
+    Pvs // ปวส
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+model Department {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    classes  Class[]
+    teachers Teacher[]
+}
+
+model Course {
+    id       Int      @id @default(autoincrement())
+    code     String   @unique
+    name     String   @unique
+    duration Int
+    examType ExamType @default(InSchedule)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    enrollments  Enrollment[]
+    courseGroups CourseGroup[]
+
+    @@index([code, name])
+}
+
+model Class {
+    id            Int    @id @default(autoincrement())
+    name          String
+    level         Level  @default(Pvoc)
+    classYear     String
+    department_id Int
+    amount        Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    department  Department   @relation(fields: [department_id], references: [id])
+    enrollments Enrollment[]
+
+    @@index([department_id])
+}
+
+model Enrollment {
+    id        Int @id @default(autoincrement())
+    class_id  Int
+    course_id Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    class  Class  @relation(fields: [class_id], references: [id])
+    course Course @relation(fields: [course_id], references: [id])
+
+    @@index([class_id, course_id])
+}
+
+model CourseGroup {
+    id        Int @id @default(autoincrement())
+    course_id Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    course Course @relation(fields: [course_id], references: [id])
+
+    @@index([course_id])
+}
+
+model Room {
+    id         Int    @id @default(autoincrement())
+    roomNumber String @unique
+    building   String
+    floor      String
+    capacity   Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([roomNumber, building])
+}
+
+model Teacher {
+    id            Int    @id @default(autoincrement())
+    name          String
+    department_id Int
+    tel           String @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    department Department @relation(fields: [department_id], references: [id])
+    // proctorPairs ProctorPair[] @relation("ProctorPairTeachers")
+
+    @@index([name, department_id])
+}
+
+model ProctorPair {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    //    teachers  Teacher[] @relation("ProctorPairTeachers")
+}
+
+model User {
+    id        String  @id @default(cuid()) @map("_id")
+    firstname String
+    lastname  String
+    username  String  @unique
+    password  String
+    email     String?
+    role      Role    @default(USER)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    tokens    Token[]
+}
+
+model Token {
+    id         String   @id @default(cuid()) @map("_id")
+    token      String   @unique
+    user_id    String
+    expires_at DateTime
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    user User @relation(fields: [user_id], references: [id])
+
+    @@index([user_id])
+    @@map("tokens")
+}

@@ -1,0 +1,3 @@
+api-nvc-exam-scheduling.duckdns.org {
+        reverse_proxy exam-scheduling:3000
+}
