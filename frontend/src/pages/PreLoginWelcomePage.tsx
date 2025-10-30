@@ -5,10 +5,6 @@ interface PreLoginWelcomePageProps {
     onStartLogin: () => void;
 }
 
-// -------------------------------------------------------------------------
-// Components สำหรับ Icon ที่ใช้ในหน้า Welcome
-// -------------------------------------------------------------------------
-
 // Icon สำหรับแสดงพลัง AI (ZapIcon)
 const ZapIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -38,7 +34,7 @@ const ArrowRightIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const PreLoginWelcomePage: React.FC<PreLoginWelcomePageProps> = ({ onStartLogin }) => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-            <div className="w-full max-w-4xl bg-white rounded-3xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] p-8 md:p-12 text-center transform transition-all duration-500 scale-95 hover:scale-100">
+            <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center transform transition-all duration-500 scale-95 hover:scale-100">
                 
                 <ZapIcon className="mx-auto h-20 w-20 text-blue-600 animate-bounce" />
                 
@@ -80,7 +76,6 @@ const PreLoginWelcomePage: React.FC<PreLoginWelcomePageProps> = ({ onStartLogin 
                         <ArrowRightIcon className="ml-3 h-6 w-6 transform transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
                 </div>
-
             </div>
         </div>
     );
