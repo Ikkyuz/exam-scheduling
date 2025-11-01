@@ -1,37 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import ZapIcon from '../components/icons/ZapIcon';
+import ClockIcon from '../components/icons/ClockIcon';
+import CheckCircleIcon from '../components/icons/CheckCircleIcon';
+import UserIcon from '../components/icons/UserIcon';
+import ArrowRightIcon from '../components/icons/ArrowRightIcon';
 
-// Interfaces และ Type ที่จำเป็น (ต้องมีในไฟล์ App.tsx)
-interface PreLoginWelcomePageProps {
-    onStartLogin: () => void;
-}
+const PreLoginWelcomePage: React.FC = () => {
+    const { isAuthenticated } = useAuth();
 
-// Icon สำหรับแสดงพลัง AI (ZapIcon)
-const ZapIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-);
-// Icon สำหรับประหยัดเวลา (ClockIcon)
-const ClockIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-);
-// Icon สำหรับความถูกต้องแม่นยำ (CheckCircleIcon)
-const CheckCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-);
-// Icon สำหรับจัดการง่าย (UserIcon)
-const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-);
-// Icon สำหรับปุ่มไปหน้า Login (ArrowRightIcon)
-const ArrowRightIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-);
-
-
-// -------------------------------------------------------------------------
-// Component หลัก: PreLoginWelcomePage
-// -------------------------------------------------------------------------
-
-const PreLoginWelcomePage: React.FC<PreLoginWelcomePageProps> = ({ onStartLogin }) => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
             <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center transform transition-all duration-500 scale-95 hover:scale-100">
@@ -68,13 +46,23 @@ const PreLoginWelcomePage: React.FC<PreLoginWelcomePageProps> = ({ onStartLogin 
 
                 {/* Call to Action Button */}
                 <div className="mt-12">
-                    <button
-                        onClick={onStartLogin}
-                        className="group relative inline-flex items-center justify-center rounded-full bg-blue-600 px-10 py-4 text-xl font-bold text-white shadow-2xl transition-all duration-300 transform hover:scale-105 hover:bg-blue-700 active:bg-blue-800 ring-4 ring-blue-300/50"
-                    >
-                        <span className="relative z-10">เข้าสู่ระบบเพื่อเริ่มต้นใช้งาน</span>
-                        <ArrowRightIcon className="ml-3 h-6 w-6 transform transition-transform duration-300 group-hover:translate-x-1" />
-                    </button>
+                    {isAuthenticated ? (
+                        <Link
+                            to="/dashboard"
+                            className="group relative inline-flex items-center justify-center rounded-full bg-green-600 px-10 py-4 text-xl font-bold text-white shadow-2xl transition-all duration-300 transform hover:scale-105 hover:bg-green-700 active:bg-green-800 ring-4 ring-green-300/50"
+                        >
+                            <span className="relative z-10">ไปยัง Dashboard</span>
+                            <ArrowRightIcon className="ml-3 h-6 w-6 transform transition-transform duration-300 group-hover:translate-x-1" />
+                        </Link>
+                    ) : (
+                        <Link
+                            to="/login"
+                            className="group relative inline-flex items-center justify-center rounded-full bg-blue-600 px-10 py-4 text-xl font-bold text-white shadow-2xl transition-all duration-300 transform hover:scale-105 hover:bg-blue-700 active:bg-blue-800 ring-4 ring-blue-300/50"
+                        >
+                            <span className="relative z-10">เข้าสู่ระบบเพื่อเริ่มต้นใช้งาน</span>
+                            <ArrowRightIcon className="ml-3 h-6 w-6 transform transition-transform duration-300 group-hover:translate-x-1" />
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

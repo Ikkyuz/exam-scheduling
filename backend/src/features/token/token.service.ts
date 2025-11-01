@@ -1,3 +1,4 @@
+import { Value } from "@sinclair/typebox/value";
 import { TokenRepository } from "./token.repository";
 import { createTokenSchema, verifyTokenSchema, userIdSchema } from "./token.schema";
 
@@ -13,11 +14,10 @@ export namespace TokenService {
         expires_at: expiresAt
       };
 
-      const parsed = createTokenSchema.safeParse(tokenData);
-      if (!parsed.success) {
-        throw new Error(parsed.error.message);
+      if (!Value.Check(createTokenSchema, tokenData)) {
+        throw new Error("Invalid token data");
       }
-      return await TokenRepository.create(parsed.data);
+      return await TokenRepository.create(tokenData);
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : "Failed to generate token");
     }
@@ -25,18 +25,17 @@ export namespace TokenService {
 
   export async function verifyToken(token: string) {
     try {
-      const parsed = verifyTokenSchema.safeParse({ token });
-      if (!parsed.success) {
-        throw new Error(parsed.error.message);
+      if (!Value.Check(verifyTokenSchema, { token })) {
+        throw new Error("Invalid token");
       }
-      const tokenRecord = await TokenRepository.findByToken(parsed.data.token);
+      const tokenRecord = await TokenRepository.findByToken(token);
       
       if (!tokenRecord) {
         return null;
       }
 
       if (tokenRecord.expires_at < new Date()) {
-        await TokenRepository.removeToken(parsed.data.token);
+        await TokenRepository.removeToken(token);
         return null;
       }
 
@@ -48,11 +47,10 @@ export namespace TokenService {
 
   export async function getUserTokens(userId: string) {
     try {
-      const parsed = userIdSchema.safeParse({ user_id: userId });
-      if (!parsed.success) {
-        throw new Error(parsed.error.message);
+      if (!Value.Check(userIdSchema, { user_id: userId })) {
+        throw new Error("Invalid user ID");
       }
-      return await TokenRepository.findByUserId(parsed.data.user_id);
+      return await TokenRepository.findByUserId(userId);
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : "Failed to get user tokens");
     }
@@ -60,11 +58,10 @@ export namespace TokenService {
 
   export async function revokeToken(token: string) {
     try {
-      const parsed = verifyTokenSchema.safeParse({ token });
-      if (!parsed.success) {
-        throw new Error(parsed.error.message);
+      if (!Value.Check(verifyTokenSchema, { token })) {
+        throw new Error("Invalid token");
       }
-      return await TokenRepository.removeToken(parsed.data.token);
+      return await TokenRepository.removeToken(token);
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : "Failed to revoke token");
     }
@@ -72,11 +69,10 @@ export namespace TokenService {
 
   export async function revokeAllUserTokens(userId: string) {
     try {
-      const parsed = userIdSchema.safeParse({ user_id: userId });
-      if (!parsed.success) {
-        throw new Error(parsed.error.message);
+      if (!Value.Check(userIdSchema, { user_id: userId })) {
+        throw new Error("Invalid user ID");
       }
-      return await TokenRepository.deleteAllUserTokens(parsed.data.user_id);
+      return await TokenRepository.deleteAllUserTokens(userId);
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : "Failed to revoke user tokens");
     }
